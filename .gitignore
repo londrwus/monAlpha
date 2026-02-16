@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+build/
+
+# data persistence
+skillmarket/data/
+
+# Claude Code settings (personal)
+.claude/
+
+# Windows reserved filenames
+nul
+
+# misc
+.DS_Store
+*.pem
+*.log
+.vercel
+*.tsbuildinfo
+
+# foundry
+contracts/cache/
+contracts/out/
+contracts/broadcast/
