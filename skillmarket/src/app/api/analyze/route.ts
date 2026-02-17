@@ -5,6 +5,8 @@ import { getModel, isBuiltIn } from "@/lib/analysis/registry";
 import { getCustomModel } from "@/lib/skills/model-store";
 import { recordUsagePayment } from "@/lib/payouts";
 import { verifyPaymentTx } from "@/lib/contract";
+import { OPENCLAW_CONFIG } from "@/lib/openclaw/config";
+import { runOpenClawAnalysis } from "@/lib/openclaw/bridge";
 import type { AgentSSEEvent } from "@/lib/analysis/agent-types";
 import type { Hash } from "viem";
 
@@ -14,14 +16,14 @@ const OWNER_WALLET = process.env.NEXT_PUBLIC_FOUNDATION_WALLET || "0x00000000000
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  let body: { token?: string; modelIds?: string[]; stream?: boolean; txHash?: string; userWallet?: string };
+  let body: { token?: string; modelIds?: string[]; stream?: boolean; txHash?: string; userWallet?: string; skillId?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { token, modelIds, txHash, userWallet } = body;
+  const { token, modelIds, txHash, userWallet, skillId } = body;
 
   // Verify on-chain usage payment if txHash provided
   if (txHash) {
@@ -97,7 +99,13 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        await runAnalysisStreaming(token, modelIds, emit);
+        if (OPENCLAW_CONFIG.enabled) {
+          // Use OpenClaw agent for orchestration
+          await runOpenClawAnalysis(token, modelIds, emit, skillId);
+        } else {
+          // Fallback: direct agent loop (no OpenClaw required)
+          await runAnalysisStreaming(token, modelIds, emit);
+        }
       } catch (err) {
         emit({ type: "error", message: err instanceof Error ? err.message : String(err) });
       } finally {

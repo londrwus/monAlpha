@@ -1,0 +1,47 @@
+# Full-stack deployment: monAlpha + OpenClaw
+#
+# Usage:
+#   cd deploy
+#   docker compose up -d
+#
+# Requires ../skillmarket/.env.local with all env vars set.
+# Nginx proxies port 3000 (already configured in nginx/monalpha.xyz).
+
+services:
+  # OpenClaw Gateway — AI agent orchestrator
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: monalpha-openclaw
+    volumes:
+      - ../openclaw/config:/root/.openclaw
+      - ../openclaw/extensions:/root/openclaw/extensions
+      - ../openclaw/skills:/root/openclaw/skills
+    env_file: ../skillmarket/.env.local
+    environment:
+      - MONALPHA_API_URL=http://monalpha:3000
+    ports:
+      - "127.0.0.1:18789:18789"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # monAlpha Next.js app
+  monalpha:
+    build:
+      context: ../skillmarket
+      dockerfile: Dockerfile
+    container_name: monalpha-app
+    env_file: ../skillmarket/.env.local
+    environment:
+      - OPENCLAW_GATEWAY_URL=http://openclaw:18789
+      - USE_OPENCLAW=true
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      openclaw:
+        condition: service_healthy
+    restart: unless-stopped

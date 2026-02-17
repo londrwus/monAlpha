@@ -1,11 +1,15 @@
 #!/bin/bash
 # SSL Setup Script
 # Run this AFTER nginx is installed and DNS is pointed to your server IP
+#
+# Required env vars:
+#   DOMAIN — your domain (e.g. monalpha.xyz)
+#   EMAIL  — email for Let's Encrypt notifications
 
 set -e
 
-DOMAIN="yourdomain.xyz"
-EMAIL="admin@yourdomain.xyz"
+DOMAIN="${DOMAIN:?Set DOMAIN env var (e.g. monalpha.xyz)}"
+EMAIL="${EMAIL:?Set EMAIL env var (e.g. admin@monalpha.xyz)}"
 
 echo "=== SSL Setup for $DOMAIN ==="
 

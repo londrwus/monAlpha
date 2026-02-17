@@ -1,7 +1,14 @@
+# Nginx config for monAlpha
+# Replace YOURDOMAIN with your actual domain, then copy to:
+#   /etc/nginx/sites-available/YOURDOMAIN
+#   ln -sf /etc/nginx/sites-available/YOURDOMAIN /etc/nginx/sites-enabled/
+#
+# Or use setup-ssl.sh which generates this automatically.
+
 server {
     listen 80;
     listen [::]:80;
-    server_name yourdomain.xyz www.yourdomain.xyz;
+    server_name YOURDOMAIN www.YOURDOMAIN;
 
     # Redirect all HTTP to HTTPS
     return 301 https://$host$request_uri;
@@ -10,11 +17,11 @@ server {
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name yourdomain.xyz www.yourdomain.xyz;
+    server_name YOURDOMAIN www.YOURDOMAIN;
 
     # SSL certificates (managed by certbot)
-    ssl_certificate /etc/letsencrypt/live/yourdomain.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.xyz/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/YOURDOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/YOURDOMAIN/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 

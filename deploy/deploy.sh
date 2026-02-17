@@ -1,11 +1,15 @@
 #!/bin/bash
 # Deployment script for monAlpha — run on your Ubuntu server
 # Usage: bash deploy.sh
+#
+# Required env vars (set in .env or export before running):
+#   APP_DIR  — path to skillmarket directory
+#   REPO_DIR — path to repo root
 
 set -e
 
-APP_DIR="/home/youruser/monalpha/skillmarket"
-REPO_DIR="/home/youruser/monalpha"
+APP_DIR="${APP_DIR:?Set APP_DIR in .env (e.g. /home/deploy/monalpha/skillmarket)}"
+REPO_DIR="${REPO_DIR:?Set REPO_DIR in .env (e.g. /home/deploy/monalpha)}"
 
 echo "=== Deploying monAlpha ==="
 

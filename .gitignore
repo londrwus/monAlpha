@@ -28,6 +28,9 @@ nul
 .vercel
 *.tsbuildinfo
 
+# OpenClaw runtime data
+openclaw/config/.env
+
 # foundry
 contracts/cache/
 contracts/out/

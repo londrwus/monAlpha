@@ -1,0 +1,35 @@
+# OpenClaw Gateway for monAlpha
+# Run: docker compose up -d
+#
+# Requires env vars (set in .env or export before running):
+#   OPENCLAW_GATEWAY_TOKEN — auth token for Gateway API
+#   DEEPSEEK_API_KEY       — DeepSeek V3 API key
+#
+# Next.js must be running on host port 3000 for tool callbacks.
+
+services:
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: monalpha-openclaw
+    volumes:
+      - ./config:/root/.openclaw
+      - ./extensions:/root/openclaw/extensions
+      - ./skills:/root/openclaw/skills
+    environment:
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-monalpha-dev-token}
+      - LLM_PROVIDER=openai
+      - OPENAI_BASE_URL=https://api.deepseek.com/v1
+      - OPENAI_API_KEY=${DEEPSEEK_API_KEY}
+      - OPENAI_MODEL=deepseek-chat
+      - MONALPHA_API_URL=http://host.docker.internal:3000
+    ports:
+      - "127.0.0.1:18789:18789"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

@@ -1,0 +1,12 @@
+{
+  "name": "monalpha-tools",
+  "version": "1.0.0",
+  "description": "monAlpha investigation tools for autonomous token analysis on Monad blockchain",
+  "author": "monAlpha",
+  "skills": [
+    "../../../skills/token-investigator",
+    "../../../skills/whale-tracker",
+    "../../../skills/rug-detector",
+    "../../../skills/liquidity-scout"
+  ]
+}

@@ -1,0 +1,32 @@
+# monAlpha OpenClaw Gateway Configuration
+# Docs: https://docs.openclaw.ai/
+
+gateway:
+  port: 18789
+  auth:
+    token: ${OPENCLAW_GATEWAY_TOKEN}
+  http:
+    endpoints: true  # Enable OpenAI-compatible HTTP API (/v1/chat/completions)
+
+# LLM Provider — DeepSeek V3 via OpenAI-compatible endpoint
+providers:
+  - type: openai-completions
+    name: deepseek
+    baseUrl: https://api.deepseek.com/v1
+    apiKey: ${OPENAI_API_KEY}
+    model: deepseek-chat
+
+# Enable tool system for custom plugins
+tools:
+  enabled: true
+  timeout: 30000  # 30s max per tool execution
+
+# Enable skill system for SKILL.md research strategies
+skills:
+  enabled: true
+  directory: /root/openclaw/skills
+
+# Extensions (auto-discovered from extensions/ directory)
+extensions:
+  enabled: true
+  directory: /root/openclaw/extensions

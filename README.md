@@ -78,20 +78,21 @@ npm install
 
 ### 2. Environment Variables
 
+All sensitive config lives in `.env.local` (gitignored). Copy the example and fill in your values:
+
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local` with your values:
+See `.env.example` for all available variables. The key ones:
 
-```env
-NETWORK=mainnet
-MONAD_RPC_URL=https://monad-mainnet.drpc.org
-NAD_API_KEY=your_nad_fun_api_key
-DEEPSEEK_API_KEY=your_deepseek_api_key
-NEXT_PUBLIC_SKILL_REGISTRY=0xYourContractAddress
-NEXT_PUBLIC_FOUNDATION_WALLET=0xYourFoundationWallet
-```
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `MONAD_RPC_URL` | Yes | Monad RPC endpoint |
+| `NAD_API_KEY` | Yes | nad.fun API key |
+| `DEEPSEEK_API_KEY` | Yes | DeepSeek V3 API key (agentic planner) |
+| `NEXT_PUBLIC_SKILL_REGISTRY` | No | SkillRegistry contract address |
+| `NEXT_PUBLIC_FOUNDATION_WALLET` | No | Wallet that receives analysis payments |
 
 ### 3. Run Development Server
 
@@ -118,15 +119,14 @@ The `SkillRegistry` contract handles model registration and usage payments on Mo
 cd contracts
 forge install
 
-# Set environment variables
-export OWNER_ADDRESS=0xYourOwnerAddress
-export FOUNDATION_ADDRESS=0xYourFoundationAddress
+# Set env vars and deploy
+export OWNER_ADDRESS=0x...
+export FOUNDATION_ADDRESS=0x...
 
-# Deploy
 forge script script/Deploy.s.sol:DeploySkillRegistry \
   --private-key $PRIVATE_KEY \
   --broadcast \
-  --rpc-url https://monad-mainnet.drpc.org \
+  --rpc-url $MONAD_RPC_URL \
   --chain-id 143
 ```
 
@@ -142,21 +142,23 @@ forge script script/Deploy.s.sol:DeploySkillRegistry \
 
 ### Server Setup (Ubuntu + Nginx + PM2)
 
-```bash
-# Install Node.js 20, nginx, PM2
-# Point DNS A record to your server IP
+All deploy scripts read config from environment variables — no hardcoded paths or domains.
 
-# Deploy
+```bash
+# Set your deploy env vars
+export APP_DIR=/home/deploy/monalpha/skillmarket
+export REPO_DIR=/home/deploy/monalpha
+export DOMAIN=monalpha.xyz
+export EMAIL=admin@monalpha.xyz
+
+# Deploy app
 bash deploy/deploy.sh
 
 # Setup SSL
-sudo bash deploy/setup-ssl.sh
-
-# Copy nginx config
-sudo cp deploy/nginx/monalpha.xyz /etc/nginx/sites-available/
-sudo ln -sf /etc/nginx/sites-available/monalpha.xyz /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
+sudo -E bash deploy/setup-ssl.sh
 ```
+
+The nginx config template is in `deploy/nginx/` — replace `YOURDOMAIN` with your actual domain or use `setup-ssl.sh` which generates it automatically.
 
 ## API Routes
 
